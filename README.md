@@ -2,6 +2,8 @@
 
 > **Go-to-Market Engineering** — A production-grade data pipeline that ranks 40,000 free-tier clinicians by predicted probability of converting to an enterprise plan, giving a sales team of 80 weekly calls its highest-ROI targets.
 
+> **Note:** All data in this project is fully synthetic and procedurally generated via `generate_data.py`. No real patient, clinician, or healthcare organization data is used anywhere in this repository.
+
 ---
 
 ## Business Problem
