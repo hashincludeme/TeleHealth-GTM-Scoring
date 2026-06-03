@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: mart_conversion_features
+    description: >
+      Full feature mart for all 40,000 clinicians. Contains raw signals,
+      dbt-computed sub-scores, boolean flags, and a rule-based baseline
+      propensity score. Used as input for ML model training and scoring.
+    columns:
+      - name: clinician_id
+        tests: [unique, not_null]
+      - name: baseline_propensity_score
+        description: >
+          Rule-based composite score (0-100). Weighted combination of behavioral
+          and firmographic scores, adjusted for power-user and at-risk flags.
+          Explainable to non-technical stakeholders and used as ML model fallback.
+        tests: [not_null]
+      - name: engagement_tier
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["Champion", "Power User", "Active", "Casual", "Dormant"]
+      - name: converted_to_enterprise
+        tests: [not_null]
+
+  - name: mart_weekly_call_list
+    description: >
+      The 80 highest-propensity unconverted, active clinicians to call this week.
+      Ranked by baseline_propensity_score. Each row includes a sales_angle field
+      that drives the AE talk-track based on the clinician's dominant signal.
+    columns:
+      - name: call_rank
+        description: Ordinal rank 1-80. Rank 1 is the highest-priority call.
+        tests: [unique, not_null]
+      - name: clinician_id
+        tests: [unique, not_null]
+      - name: sales_angle
+        tests: [not_null]
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "count(*) = 80"
+          name: assert_exactly_80_calls

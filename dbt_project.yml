@@ -1,0 +1,57 @@
+name: "telehealth_gtm"
+version: "1.0.0"
+config-version: 2
+
+profile: "telehealth_gtm"
+
+model-paths:    ["models"]
+analysis-paths: ["analyses"]
+test-paths:     ["tests"]
+seed-paths:     ["seeds"]
+macro-paths:    ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  telehealth_gtm:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: table
+      +schema: intermediate
+    marts:
+      +materialized: table
+      +schema: marts
+
+seeds:
+  telehealth_gtm:
+    +schema: raw
+    clinicians:
+      +column_types:
+        signup_date: varchar
+        converted_to_enterprise: integer
+        conversion_date: varchar
+    usage_metrics:
+      +column_types:
+        snapshot_date: varchar
+        logins_per_week: integer
+        days_since_last_login: integer
+        team_members_invited: integer
+        api_calls_per_week: integer
+        features_used_count: integer
+        support_tickets_l90d: integer
+        video_consults_per_week: integer
+        async_messages_per_week: integer
+        days_on_platform: integer
+    firmographic_enrichment:
+      +column_types:
+        annual_patient_volume: integer
+        num_locations: integer
+        has_billing_system: integer
+        accepts_insurance: integer
+        is_group_practice: integer

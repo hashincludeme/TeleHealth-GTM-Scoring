@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: int_clinician_engagement
+    description: >
+      Recency-Frequency-Expansion (RFE) scores computed from the usage snapshot.
+      Each score is normalized 0-100. engagement_tier is a categorical label used
+      for sales talk-track routing.
+    columns:
+      - name: clinician_id
+        tests: [unique, not_null]
+      - name: recency_score
+        tests: [not_null]
+      - name: frequency_score
+        tests: [not_null]
+      - name: expansion_score
+        tests: [not_null]
+      - name: engagement_tier
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["Champion", "Power User", "Active", "Casual", "Dormant"]
+
+  - name: int_clinician_firmographic_score
+    description: >
+      Converts categorical firmographic attributes into 0-100 sub-scores and
+      a weighted composite firmographic_score. Higher scores indicate accounts
+      most likely to need (and afford) enterprise features.
+    columns:
+      - name: clinician_id
+        tests: [unique, not_null]
+      - name: firmographic_score
+        tests: [not_null]
+
+  - name: int_clinician_features
+    description: >
+      Master feature record per clinician. Joins engagement and firmographic
+      intermediate tables. This is the canonical input to the ML training step.
+    columns:
+      - name: clinician_id
+        tests: [unique, not_null]
+      - name: behavioral_score
+        tests: [not_null]
+      - name: firmographic_score
+        tests: [not_null]

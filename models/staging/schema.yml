@@ -1,0 +1,62 @@
+version: 2
+
+models:
+  - name: stg_clinicians
+    description: >
+      Cleaned clinician master record. One row per clinician.
+      Contains identity, specialty, firmographic tier, and the
+      ground-truth enterprise conversion label for model training.
+    columns:
+      - name: clinician_id
+        description: Primary key – unique identifier for each clinician.
+        tests:
+          - unique
+          - not_null
+      - name: signup_date
+        tests: [not_null]
+      - name: specialty
+        tests: [not_null]
+      - name: state
+        tests: [not_null]
+      - name: practice_size
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["Solo", "Small (2-10)", "Medium (11-50)",
+                       "Large (51-200)", "Enterprise (200+)"]
+      - name: converted_to_enterprise
+        tests: [not_null]
+
+  - name: stg_usage_metrics
+    description: >
+      Weekly product usage snapshot per clinician.
+      Captures behavioral signals: login frequency, team viral loop,
+      API adoption, feature breadth, and support friction.
+    columns:
+      - name: clinician_id
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref('stg_clinicians')
+              field: clinician_id
+      - name: logins_per_week
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: days_since_last_login
+        tests: [not_null]
+
+  - name: stg_firmographic_enrichment
+    description: >
+      External firmographic enrichment: patient volume, revenue band,
+      location count, billing maturity, and insurance acceptance.
+    columns:
+      - name: clinician_id
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref('stg_clinicians')
+              field: clinician_id

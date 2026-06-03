@@ -1,0 +1,36 @@
+# dbt build artifacts
+target/
+dbt_packages/
+logs/
+
+# DuckDB database (generated locally)
+*.duckdb
+*.duckdb.wal
+
+# ML model artifacts (large binary files)
+artifacts/
+
+# Pipeline outputs
+outputs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/settings.json
+.idea/
+*.swp
